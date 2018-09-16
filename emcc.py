@@ -83,10 +83,10 @@ EXECUTABLE_SUFFIXES = JS_CONTAINING_SUFFIXES + ('wasm',)
 
 DEFERRED_RESPONSE_FILES = ('EMTERPRETIFY_BLACKLIST', 'EMTERPRETIFY_WHITELIST', 'EMTERPRETIFY_SYNCLIST')
 
-# Mapping of emcc opt levels to llvm opt levels. We use llvm opt level 3 in emcc opt
-# levels 2 and 3 (emcc 3 is unsafe opts, so unsuitable for the only level to get
-# llvm opt level 3, and speed-wise emcc level 2 is already the slowest/most optimizing
-# level)
+# Mapping of emcc opt levels to llvm opt levels. We use llvm opt level 3 in emcc
+# opt levels 2 and 3 (emcc 3 is unsafe opts, so unsuitable for the only level to
+# get llvm opt level 3, and speed-wise emcc level 2 is already the slowest/most
+# optimizing level)
 LLVM_OPT_LEVEL = {
   0: ['-O0'],
   1: ['-O1'],
@@ -94,28 +94,30 @@ LLVM_OPT_LEVEL = {
   3: ['-O3'],
 }
 
-DEBUG = os.environ.get('EMCC_DEBUG')
-if DEBUG == "0":
-  DEBUG = None
+DEBUG = int(os.environ.get('EMCC_DEBUG', '0'))
 
 # Do not compile .ll files into .bc, just compile them with emscripten directly
 # Not recommended, this is mainly for the test runner, or if you have some other
 # specific need.
 # One major limitation with this mode is that libc and libc++ cannot be
 # added in. Also, LLVM optimizations will not be done, nor dead code elimination
-LEAVE_INPUTS_RAW = os.environ.get('EMCC_LEAVE_INPUTS_RAW')
+LEAVE_INPUTS_RAW = int(os.environ.get('EMCC_LEAVE_INPUTS_RAW', '0'))
 
-# If emcc is running with LEAVE_INPUTS_RAW and then launches an emcc to build something like the struct info, then we don't want
-# LEAVE_INPUTS_RAW to be active in that emcc subprocess.
+# If emcc is running with LEAVE_INPUTS_RAW and then launches an emcc to build
+# something like the struct info, then we don't want LEAVE_INPUTS_RAW to be
+# active in that emcc subprocess.
 if LEAVE_INPUTS_RAW:
   del os.environ['EMCC_LEAVE_INPUTS_RAW']
 
-# If set to 1, we will run the autodebugger (the automatic debugging tool, see tools/autodebugger).
-# Note that this will disable inclusion of libraries. This is useful because including
-# dlmalloc makes it hard to compare native and js builds
+# If set to 1, we will run the autodebugger (the automatic debugging tool, see
+# tools/autodebugger).  Note that this will disable inclusion of libraries. This
+# is useful because including dlmalloc makes it hard to compare native and js
+# builds
 AUTODEBUG = os.environ.get('EMCC_AUTODEBUG')
 
-EMCC_CFLAGS = os.environ.get('EMCC_CFLAGS') # Additional compiler flags that we treat as if they were passed to us on the commandline
+# Additional compiler flags that we treat as if they were passed to us on the
+# commandline
+EMCC_CFLAGS = os.environ.get('EMCC_CFLAGS')
 
 # Target options
 final = None
